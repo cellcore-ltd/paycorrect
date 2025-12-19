@@ -1,0 +1,121 @@
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+export default function AgentsList({ agents, onInvite, onSelectAgent }) {
+  // Search + filter states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [showFilter, setShowFilter] = useState(false);
+
+  // 👉 Filtered members
+  const filteredAgents = agents.filter((a) => {
+    const matchesSearch =
+      a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.id.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "All" ? true : a.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+    return (
+    <motion.div
+      key="agents-list"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.3, delay: 0.1 }}
+      className="flex gap-4 flex-col flex-1 py-4 overflow-hidden"
+    >
+      {/* Search + Filter */}
+      <div className="flex w-full justify-between gap-2 items-center relative px-4">
+        <div className="relative w-full">
+          <input
+            type="search"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full border px-3 py-2 rounded" 
+           />
+            <FontAwesomeIcon
+            icon={faSearch}
+            size="1x"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+          />
+        </div>
+        <button
+          onClick={() => setShowFilter((prev) => !prev)}
+          className="border border-gray-600 px-4 py-2 rounded"
+        >
+          Filter
+        </button>
+        {showFilter && (
+          <div className="absolute right-4 top-12 bg-white border rounded shadow-md w-40 z-10">
+            {["All", "Active", "Inactive", "Invited", "Suspended"].map((status) => (
+              <button
+                key={status}
+                onClick={() => {
+                  setStatusFilter(status);
+                  setShowFilter(false);
+                }}
+                className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
+                  statusFilter === status ? "font-bold bg-gray-200" : ""
+                }`}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+        {/* Agents List */}
+        <div className="flex-1 overflow-y-auto px-4">
+            {filteredAgents.length === 0 ? (
+               <p className="text-gray-500 text-center mt-8">No agents found.</p>
+            ) : (
+            <div className="flex flex-col gap-3">
+                {filteredAgents.map((agent) => (
+                <div
+                    key={agent.id}
+                    className="rounded p-3 bg-white shadow-sm flex justify-between items-center"
+                >
+                    <div className="flex flex-col gap-1">
+                    <p className="font-medium">{agent.name}</p>
+                    <p className="text-sm text-gray-500">ID: {agent.id}</p>
+                    <span
+                      className={`text-xs w-fit px-2 py-1 rounded font-medium  ${
+                        agent.status === "Active"
+                        ? "bg-green-100 text-green-800"
+                        : agent.status === "Inactive"
+                        ? "bg-indigo-100 text-indigo-800"
+                        : agent.status === "Invited"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                    >{agent.status}</span>
+                    </div>
+                    <button
+                      onClick={() => {onSelectAgent({ ...agent });}}
+                      className="border border-blue-500 text-blue-500 px-3 py-1 rounded"
+                    >
+                      View
+                    </button>
+                </div>
+                ))}
+            </div>
+            )}
+        </div>
+
+        <div className="w-full px-4 bg-white">
+        <button
+          onClick={onInvite}
+          className="border border-blue-500 text-blue-500 px-4 py-2 rounded w-full"
+        >
+          Add or invite new agent
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
