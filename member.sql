@@ -1,0 +1,17 @@
+CREATE TABLE members (
+  `id` serial NOT NULL,
+  `unique_id` NOT NULL PRIMARY KEY,
+  `customer_account_number` bigint(12) NOT NULL,
+  `customer_account_name` varchar(200) NOT NULL,
+  `customer_account_balance` decimal(10,2) NOT NULL,
+  `customer_phone` varchar(14) NOT NULL,
+  `customer_account_type` varchar(20) NOT NULL,
+  `bank_id` varchar(7) DEFAULT NULL,
+  `reservationReference` varchar(200) DEFAULT NULL,
+  `virtual_account_number` varchar(10) DEFAULT NULL,
+  `virtual_account_name` varchar(255) DEFAULT NULL,
+  `virtual_bank_name` varchar(255) DEFAULT NULL,
+  `virtual_bank_code` varchar(5) DEFAULT NULL,
+  `last_updated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `customer_status` varchar(10) DEFAULT NULL,
+)
